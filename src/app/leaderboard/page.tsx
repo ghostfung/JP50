@@ -4,7 +4,7 @@ import { useLeaderboard } from "@/hooks/useLeaderboard";
 import Link from "next/link";
 
 export default function LeaderboardPage() {
-  const { board } = useLeaderboard();
+  const { board, isLoading, refreshBoard } = useLeaderboard();
 
   return (
     <div className="flex flex-col items-center py-6 space-y-6 w-full max-w-sm mx-auto animate-in slide-in-from-bottom-4 duration-500 font-handwriting">
@@ -16,13 +16,25 @@ export default function LeaderboardPage() {
         </Link>
         <span className="text-xl font-bold bg-pastel-yellow/30 px-4 py-1 rounded-sm rotate-2 relative">
           <div className="absolute inset-0 border border-dashed border-yellow-500/40 rounded-sm -rotate-2 scale-105 pointer-events-none"></div>
-          高分排行榜 🏆
+          全球排行榜 🏆
         </span>
-        <div className="w-12"></div> {/* 佔位 */}
+        <button 
+          onClick={() => refreshBoard()}
+          className={`text-xl p-1 hover:rotate-180 transition-transform duration-500 ${isLoading ? 'animate-spin' : ''}`}
+          title="重新整理"
+        >
+          🔄
+        </button>
       </div>
 
-      <div className="w-full px-2 mt-4">
-        {board.length === 0 ? (
+      <div className="w-full px-2 mt-4 relative">
+        {isLoading && (
+          <div className="absolute inset-x-0 -top-6 text-center text-xs text-techo-ink/40 animate-pulse">
+            正在連線到雲端手帳... ☁️
+          </div>
+        )}
+
+        {board.length === 0 && !isLoading ? (
           <div className="text-center py-20 text-techo-ink/60 bg-white/50 rounded-2xl border-2 border-dashed border-techo-ink/10">
             <div className="text-4xl mb-4 opacity-50">👻</div>
             <p>目前還沒有人挑戰過喔！<br />快去成為第一個上榜的勇者吧！</p>
