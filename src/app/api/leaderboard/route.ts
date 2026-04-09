@@ -2,6 +2,8 @@ import { kv } from "@vercel/kv";
 import { NextResponse } from "next/server";
 import { ScoreRecord } from "@/hooks/useLeaderboard";
 
+export const dynamic = "force-dynamic";
+
 const LEADERBOARD_KEY = "global_jp50_leaderboard";
 
 // 獲取全球排行榜
