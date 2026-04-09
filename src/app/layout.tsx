@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { M_PLUS_Rounded_1c, Klee_One } from "next/font/google";
 import "./globals.css";
 
@@ -14,7 +14,17 @@ const mPlusRounded = M_PLUS_Rounded_1c({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0F2540",
+};
+
 export const metadata: Metadata = {
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "50音",
+  },
   title: "JP50 五十音練習 | 日文初學者工具",
   description: "免費平假名片假名測驗工具，為日文初學者打造的可愛手帳風格 Japanese Hiragana Quiz！",
   keywords: ["50音練習", "日文初學者工具", "免費平假名片假名測驗", "Japanese Hiragana Quiz", "五十音", "日語學習"],

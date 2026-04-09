@@ -1,0 +1,21 @@
+{
+  "name": "50音練習",
+  "short_name": "50音",
+  "description": "免費平假名片假名測驗工具，為日文初學者打造的可愛手帳風格 App",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FCFAF2",
+  "theme_color": "#0F2540",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}
