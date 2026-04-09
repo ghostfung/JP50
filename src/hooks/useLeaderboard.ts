@@ -63,7 +63,11 @@ export function useLeaderboard() {
     // 1. 先即時更新本地畫面 (UX 體驗較好)
     setBoard((prev) => {
       return [...prev, newRecord]
-        .sort((a, b) => b.score === a.score ? b.accuracy - a.accuracy : b.score - a.score)
+        .sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
+          return (a.timeSpent || Infinity) - (b.timeSpent || Infinity);
+        })
         .slice(0, 10);
     });
 

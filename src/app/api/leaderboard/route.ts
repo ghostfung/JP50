@@ -24,7 +24,11 @@ export async function POST(request: Request) {
     
     // 合併並排序 (取前 10 名)
     const newBoard = [...currentBoard, newRecord]
-      .sort((a, b) => b.score === a.score ? b.accuracy - a.accuracy : b.score - a.score)
+      .sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
+        return (a.timeSpent || Infinity) - (b.timeSpent || Infinity);
+      })
       .slice(0, 10);
     
     // 存回雲端

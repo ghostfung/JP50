@@ -18,7 +18,8 @@ export async function POST(request: Request) {
 
     // 2. 抓取全球累積挑戰次數
     // 這個數字是在 /api/leaderboard 提交成績時增加的
-    const totalTests = (await kv.get<number>("global_jp50_total_tests")) || 0;
+    // 加入 90 作為初始基數，讓數字看起來比較豐富
+    const totalTests = ((await kv.get<number>("global_jp50_total_tests")) || 0) + 90;
 
     return NextResponse.json({ onlineUsers: Math.max(1, onlineUsers), totalTests });
   } catch (error) {
