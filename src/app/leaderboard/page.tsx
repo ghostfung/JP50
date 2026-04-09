@@ -67,10 +67,10 @@ export default function LeaderboardPage() {
                       {medal}
                       <div className="flex flex-col">
                         <span className="font-bold text-lg text-techo-ink">{record.name}</span>
-                        <div className="flex flex-wrap gap-1 items-center max-w-[120px]">
-                          <span className="text-[10px] text-techo-ink/50 font-sans tracking-wide">{record.date}</span>
+                        <div className="flex flex-col gap-1 mt-0.5 pr-2">
+                          <span className="text-[10px] text-techo-ink/50 font-sans tracking-wide leading-none">{record.date}</span>
                           {record.testType && (
-                            <span className="text-[9px] bg-techo-ink/5 text-techo-ink/60 px-1 rounded font-sans tracking-tight truncate w-full">
+                            <span className="text-[9px] bg-techo-ink/5 text-techo-ink/60 px-1 py-0.5 rounded font-sans tracking-tight leading-snug w-fit break-words">
                               {record.testType}
                             </span>
                           )}
