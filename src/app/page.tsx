@@ -47,7 +47,7 @@ export default function Home() {
           <span className="text-xl pl-1">👤</span>
           <input
             type="text"
-            placeholder="請輸入您的手帳暱名稱..."
+            placeholder="請輸入您的手帳名稱..."
             className="w-full bg-transparent outline-none text-lg text-techo-ink placeholder-techo-ink/30 font-bold"
             value={userName}
             onChange={(e) => saveUserName(e.target.value)}
