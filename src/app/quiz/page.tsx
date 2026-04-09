@@ -23,6 +23,7 @@ function QuizContent() {
   const [score, setScore] = useState(0);
   const [currentAttempts, setCurrentAttempts] = useState(0); 
   const [firstTryCorrects, setFirstTryCorrects] = useState(0);
+  const [wrongAnswers, setWrongAnswers] = useState<Array<{char: string, romaji: string}>>([]);
   const [startTime, setStartTime] = useState<number>(0);
   const [timeSpent, setTimeSpent] = useState<number>(0);
   const [testType, setTestType] = useState<string>("綜合");
@@ -115,6 +116,16 @@ function QuizContent() {
     } else {
       // 答錯了，增加嘗試次數並等待使用者重選
       setCurrentAttempts(prev => prev + 1);
+      
+      // 如果是第一次答錯，把目標字元加到錯題本裡面
+      if (currentAttempts === 0) {
+        setWrongAnswers(prev => {
+          // 確保不會重複加同一個字
+          if (prev.some(w => w.char === currentQuestion.target.char)) return prev;
+          return [...prev, { char: currentQuestion.target.char, romaji: currentQuestion.target.romaji }];
+        });
+      }
+
       setTimeout(() => {
         setSelectedOptionId(null);
       }, 800);
@@ -162,6 +173,28 @@ function QuizContent() {
             </span>
           </div>
         </div>
+
+        {/* 錯題區塊 */}
+        {wrongAnswers.length > 0 ? (
+          <div className="w-full max-w-sm bg-pastel-pink/20 rounded-xl p-4 border border-pastel-pink/50">
+            <h3 className="text-sm font-bold text-pink-700/80 mb-2 flex items-center justify-center gap-1">
+              <span>🩹 需要加強的字</span>
+              <span className="font-sans">({wrongAnswers.length})</span>
+            </h3>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {wrongAnswers.map(w => (
+                <div key={w.char} className="bg-white px-2 py-1 rounded shadow-sm border border-pink-100/50 flex items-center gap-1">
+                  <span className="font-bold text-techo-ink">{w.char}</span>
+                  <span className="text-[10px] text-techo-ink/40 font-sans uppercase">{w.romaji}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="w-full max-w-sm bg-pastel-green/20 rounded-xl p-4 border border-pastel-green/50 text-center">
+            <span className="text-green-700 font-bold">太完美了！一字不漏零失誤！💯</span>
+          </div>
+        )}
 
         <div className="flex gap-4 pt-4 flex-col w-full max-w-xs">
           <Link href="/leaderboard" className="w-full">

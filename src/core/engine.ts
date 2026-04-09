@@ -44,8 +44,36 @@ export function generateQuizSession(types: KanaType[], limit = 50): QuizQuestion
       incorrectPool = pool.filter((k) => k.id !== target.id);
     }
 
-    // 抽出 3 個錯誤答案
-    const shuffledIncorrect = shuffle(incorrectPool).slice(0, 3);
+    // 提高難度：找出容易混淆的干擾項 (相同母音或相同子音)
+    const targetRomaji = target.romaji.toLowerCase();
+    const vowel = targetRomaji.match(/[aiueon]$/)?.[0] || '';
+    const consonant = targetRomaji.replace(/[aiueon]$/, '');
+
+    const sameVowelPool = incorrectPool.filter(k => k.romaji.toLowerCase().endsWith(vowel));
+    const sameConsonantPool = consonant 
+      ? incorrectPool.filter(k => k.romaji.toLowerCase().startsWith(consonant) && k.romaji.toLowerCase().replace(/[aiueon]$/, '') === consonant)
+      : [];
+
+    let selectedDistractors: CharacterData[] = [];
+
+    // 1. 抽一個同母音的 (例: ka 抽 sa)
+    if (sameVowelPool.length > 0) {
+      selectedDistractors.push(shuffle(sameVowelPool)[0]);
+    }
+
+    // 2. 抽一個同子音的 (例: ka 抽 ki)
+    const availableConsonants = sameConsonantPool.filter(k => !selectedDistractors.some(s => s.id === k.id));
+    if (availableConsonants.length > 0) {
+      selectedDistractors.push(shuffle(availableConsonants)[0]);
+    }
+
+    // 3. 剩下的隨便抽補滿 3 個
+    const remainingPool = shuffle(incorrectPool.filter(k => !selectedDistractors.some(s => s.id === k.id)));
+    while (selectedDistractors.length < 3 && remainingPool.length > 0) {
+      selectedDistractors.push(remainingPool.pop()!);
+    }
+
+    const shuffledIncorrect = selectedDistractors;
     
     // 合併正確答案並洗牌順序
     const options = shuffle([...shuffledIncorrect, target]);
