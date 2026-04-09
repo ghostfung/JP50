@@ -47,7 +47,7 @@ export default function Home() {
           <span className="text-xl pl-1">👤</span>
           <input
             type="text"
-            placeholder="請輸入您的手帳暱稱..."
+            placeholder="請輸入您的手帳暱名稱..."
             className="w-full bg-transparent outline-none text-lg text-techo-ink placeholder-techo-ink/30 font-bold"
             value={userName}
             onChange={(e) => saveUserName(e.target.value)}
@@ -65,8 +65,8 @@ export default function Home() {
               key={cat.id}
               onClick={() => toggleCategory(cat.id)}
               className={`relative flex flex-col items-center p-3 rounded-lg border-2 transition-all duration-300 ease-out transform ${isSelected
-                  ? "border-techo-accent bg-white shadow-md scale-105 z-10"
-                  : "border-transparent bg-white/50 shadow-sm hover:scale-100 hover:bg-white/80 grayscale opacity-70"
+                ? "border-techo-accent bg-white shadow-md scale-105 z-10"
+                : "border-transparent bg-white/50 shadow-sm hover:scale-100 hover:bg-white/80 grayscale opacity-70"
                 }`}
             >
               {isSelected && (
@@ -91,14 +91,14 @@ export default function Home() {
           onClick={(e) => {
             if (!userName.trim()) {
               e.preventDefault();
-              alert("請先輸入您的手帳暱稱，才能開始為您記錄分數喔！ 🖋️");
+              alert("請先輸入您的手帳名稱，才能開始為您記錄分數喔！ 🖋️");
             }
           }}
           className={`w-full group ${!userName.trim() ? "opacity-90" : ""}`}
         >
           <div className={`${userName.trim() ? "bg-techo-ink text-techo-paper" : "bg-gray-300 text-gray-500"} text-center py-4 rounded-2xl font-bold text-xl shadow-md transition-transform duration-300 active:scale-95 relative overflow-hidden`}>
             <span className="relative z-10 flex items-center justify-center gap-2">
-              {userName.trim() ? "開始測驗 ✏️" : "請先輸入暱稱 ⚠️"}
+              {userName.trim() ? "開始測驗 ✏️" : "請先輸入名稱 ⚠️"}
             </span>
             {userName.trim() && (
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />

@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-TW">
+    <html lang="zh-TW" suppressHydrationWarning>
       <body
         className={`${kleeOne.variable} ${mPlusRounded.variable} antialiased bg-techo-paper text-techo-ink min-h-screen relative dot-grid`}
       >
