@@ -19,7 +19,7 @@ export default function Home() {
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [sysStats, setSysStats] = useState({ onlineUsers: 1, totalTests: 0 });
+  const [sysStats, setSysStats] = useState({ onlineUsers: 1, totalTests: 90 });
 
   const toggleCategory = (id: KanaType) => {
     setSelected((prev) => {
