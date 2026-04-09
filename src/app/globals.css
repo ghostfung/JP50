@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-techo-paper: #FCFAF2;
+  --color-techo-ink: #5C4A42;
+  --color-techo-accent: #E2C0C6;
+  --color-pastel-pink: #FAD1D1;
+  --color-pastel-blue: #CDE2E8;
+  --color-pastel-green: #D6E8D1;
+  --color-pastel-yellow: #FFF1CC;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-mplus-rounded), sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-klee-one), sans-serif;
+  }
+}
+
+@layer utilities {
+  .dot-grid {
+    background-image: radial-gradient(#D4C9C1 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-position: 0 0;
+  }
+  
+  .font-handwriting {
+    font-family: var(--font-klee-one), sans-serif;
+  }
+}
+
+:root {
+  background-color: var(--color-techo-paper);
+  color: var(--color-techo-ink);
+}
