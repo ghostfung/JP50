@@ -276,11 +276,16 @@ export default function Home() {
                 <>
                   <div className="flex items-start gap-3">
                     <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">1</span>
-                    <span>點擊 Safari 瀏覽器底部的 <b>「分享」</b> 圖示<br/><span className="text-blue-500 inline-block border border-blue-200 bg-blue-50 px-1 rounded text-xs mt-1">(像一個有朝上箭頭的方塊)</span></span>
+                    <span>點擊瀏覽器的 <b>「分享」</b> 圖示 ⍗<br/>
+                      <span className="text-blue-500 inline-block border border-blue-200 bg-blue-50 px-1 rounded text-xs mt-1 leading-relaxed">
+                        Safari 用戶：在畫面正下方<br/>
+                        Chrome 用戶：在網址列旁邊
+                      </span>
+                    </span>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">2</span>
-                    <span>將選單往上滑拉，找到 <b>「加入主畫面 ＋」</b></span>
+                    <span>在彈出的選單中往上滑，找到 <b>「加入主畫面 ＋」</b></span>
                   </div>
                 </>
               ) : (
