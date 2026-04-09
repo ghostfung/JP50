@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { KanaType } from "@/core/data";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
@@ -26,6 +26,29 @@ export default function Home() {
       }
     });
   };
+
+  // 動態切換 Favicon 邏輯
+  useEffect(() => {
+    const isOnlyKatakana = selected.includes("katakana") && !selected.includes("hiragana");
+    const char = isOnlyKatakana ? "ア" : "あ";
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180">
+      <rect width="180" height="180" rx="36" fill="#0F2540" />
+      <text x="50%" y="55%" font-family="system-ui, sans-serif, 'Hiragino Kaku Gothic ProN', Meiryo" font-size="120" font-weight="900" fill="#FFFFFF" text-anchor="middle" dominant-baseline="middle">${char}</text>
+    </svg>`;
+
+    const dataUrl = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+
+    // 尋找已有的 favicon，或新增一個
+    let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.type = "image/svg+xml";
+    link.href = dataUrl;
+  }, [selected]);
 
   const schemaData = {
     "@context": "https://schema.org",
