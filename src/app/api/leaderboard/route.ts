@@ -7,8 +7,16 @@ const LEADERBOARD_KEY = "global_jp50_leaderboard";
 // 獲取全球排行榜
 export async function GET() {
   try {
-    const board = await kv.get<ScoreRecord[]>(LEADERBOARD_KEY);
-    return NextResponse.json(board || []);
+    const rawBoard = (await kv.get<ScoreRecord[]>(LEADERBOARD_KEY)) || [];
+    
+    // 強制再次排序，修正之前存入的舊資料順序
+    const board = rawBoard.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (b.accuracy !== a.accuracy) return b.accuracy - a.accuracy;
+      return (a.timeSpent || Infinity) - (b.timeSpent || Infinity);
+    });
+
+    return NextResponse.json(board);
   } catch (error) {
     return NextResponse.json({ error: "無法讀取排行榜" }, { status: 500 });
   }
