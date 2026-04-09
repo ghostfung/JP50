@@ -20,6 +20,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.png",
+    apple: "/apple-icon.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
