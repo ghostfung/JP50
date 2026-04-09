@@ -15,8 +15,10 @@ const CATEGORIES: { id: KanaType; title: string; romaji: string; emoji: string; 
 export default function Home() {
   const [selected, setSelected] = useState<KanaType[]>(["hiragana"]);
   const { userName, saveUserName } = useLeaderboard();
-  const [isIOSBrowser, setIsIOSBrowser] = useState(false);
+  const [deviceType, setDeviceType] = useState<"ios" | "android" | null>(null);
   const [showInstallGuide, setShowInstallGuide] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   const toggleCategory = (id: KanaType) => {
     setSelected((prev) => {
@@ -52,17 +54,53 @@ export default function Home() {
     link.href = dataUrl;
   }, [selected]);
 
-  // 偵測是否為 iOS Safari 且未安裝 PWA
+  // 偵測裝置與是否已安裝 PWA
   useEffect(() => {
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    // 監聽 Android 原生的安裝提示事件
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in window.navigator && (window.navigator as any).standalone === true);
-    
-    if (isIOS && !isStandalone) {
-      setIsIOSBrowser(true);
-    }
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault(); // 防止瀏覽器自動彈出
+      setDeferredPrompt(e); // 儲存事件，讓按鈕可以觸發
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    const checkDevice = () => {
+      const userAgent = window.navigator.userAgent.toLowerCase();
+      const isIOS = /iphone|ipad|ipod/.test(userAgent);
+      const isAndroid = /android/.test(userAgent);
+      
+      // 偵測是否已經是 PWA (Standalone 模式)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in window.navigator && (window.navigator as any).standalone === true);
+      
+      if (!isStandalone) {
+        if (isIOS) setDeviceType("ios");
+        else if (isAndroid) setDeviceType("android");
+      }
+    };
+
+    checkDevice();
+
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
   }, []);
+
+  // 處理安裝按鈕點擊
+  const handleInstallClick = () => {
+    if (deviceType === "android" && deferredPrompt) {
+      // 如果 Chrome/Android 捕捉到了原生安裝動作，直接呼叫它
+      deferredPrompt.prompt();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the PWA prompt');
+        }
+        setDeferredPrompt(null);
+      });
+    } else {
+      // iOS 或未能攔截到原生事件的 Android，顯示手動教學 Modal
+      setShowInstallGuide(true);
+    }
+  };
 
   const schemaData = {
     "@context": "https://schema.org",
@@ -213,36 +251,54 @@ export default function Home() {
           查閱五十音發音對照表 📖
         </Link>
 
-        {/* iPhone (iOS) PWA 下載提示 */}
-        {isIOSBrowser && (
+        {/* 裝置專屬 PWA 下載提示 */}
+        {deviceType && (
           <button 
-            onClick={() => setShowInstallGuide(true)}
+            onClick={handleInstallClick}
             className="w-full text-center py-3 mt-4 bg-pastel-blue/40 text-blue-900 rounded-xl font-bold shadow-sm hover:scale-105 transition-transform text-sm flex justify-center items-center gap-2 border border-blue-200/50"
           >
-            📲 安裝 iPhone 離線 App 版
+            📲 安裝 {deviceType === "ios" ? "iPhone" : "Android"} 離線 App 版
           </button>
         )}
       </div>
 
-      {/* iPhone 安裝教學 Modal */}
+      {/* 手動安裝教學 Modal */}
       {showInstallGuide && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-techo-ink/40 backdrop-blur-sm" onClick={() => setShowInstallGuide(false)}>
           <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl relative border-2 border-dashed border-pastel-blue" onClick={e => e.stopPropagation()}>
             <button className="absolute top-2 right-4 text-xl text-techo-ink/50" onClick={() => setShowInstallGuide(false)}>×</button>
-            <h3 className="text-lg font-bold text-techo-ink mb-4 text-center">📱 iPhone 安裝教學</h3>
+            <h3 className="text-lg font-bold text-techo-ink mb-4 text-center">
+              📱 {deviceType === "ios" ? "iPhone" : "Android"} 安裝教學
+            </h3>
             
             <div className="space-y-4 text-sm text-techo-ink/80 font-sans tracking-wide">
-              <div className="flex items-start gap-3">
-                <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">1</span>
-                <span>點擊 Safari 瀏覽器底部的 <b>「分享」</b> 圖示<br/><span className="text-blue-500 inline-block border border-blue-200 bg-blue-50 px-1 rounded text-xs mt-1">(像一個有朝上箭頭的方塊)</span></span>
-              </div>
-              <div className="flex items-start gap-3">
-                <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">2</span>
-                <span>將選單往上滑拉，找到 <b>「加入主畫面 ＋」</b></span>
-              </div>
+              {deviceType === "ios" ? (
+                <>
+                  <div className="flex items-start gap-3">
+                    <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">1</span>
+                    <span>點擊 Safari 瀏覽器底部的 <b>「分享」</b> 圖示<br/><span className="text-blue-500 inline-block border border-blue-200 bg-blue-50 px-1 rounded text-xs mt-1">(像一個有朝上箭頭的方塊)</span></span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">2</span>
+                    <span>將選單往上滑拉，找到 <b>「加入主畫面 ＋」</b></span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-start gap-3">
+                    <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">1</span>
+                    <span>點擊瀏覽器右上角的 <b>「設定」</b> 圖示<br/><span className="text-blue-500 inline-block border border-blue-200 bg-blue-50 px-1 rounded text-xs mt-1">(通常是三個點 ⋮ )</span></span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">2</span>
+                    <span>在選單中尋找並點擊 <b>「加到主畫面」</b> 或是 <b>「安裝應用程式」</b></span>
+                  </div>
+                </>
+              )}
+              
               <div className="flex items-start gap-3">
                 <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">3</span>
-                <span>點擊右上角的 <b>「新增」</b>，以後就可以在桌面直接秒開，而且完全支援離線使用喔！</span>
+                <span>點擊 <b>「新增」</b> 或 <b>「安裝」</b>，以後就可以在桌面直接秒開，而且完全支援離線使用喔！</span>
               </div>
             </div>
 
