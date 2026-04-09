@@ -15,6 +15,8 @@ const CATEGORIES: { id: KanaType; title: string; romaji: string; emoji: string; 
 export default function Home() {
   const [selected, setSelected] = useState<KanaType[]>(["hiragana"]);
   const { userName, saveUserName } = useLeaderboard();
+  const [isIOSBrowser, setIsIOSBrowser] = useState(false);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
 
   const toggleCategory = (id: KanaType) => {
     setSelected((prev) => {
@@ -49,6 +51,18 @@ export default function Home() {
     link.type = "image/svg+xml";
     link.href = dataUrl;
   }, [selected]);
+
+  // 偵測是否為 iOS Safari 且未安裝 PWA
+  useEffect(() => {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || ('standalone' in window.navigator && (window.navigator as any).standalone === true);
+    
+    if (isIOS && !isStandalone) {
+      setIsIOSBrowser(true);
+    }
+  }, []);
 
   const schemaData = {
     "@context": "https://schema.org",
@@ -198,7 +212,46 @@ export default function Home() {
         >
           查閱五十音發音對照表 📖
         </Link>
+
+        {/* iPhone (iOS) PWA 下載提示 */}
+        {isIOSBrowser && (
+          <button 
+            onClick={() => setShowInstallGuide(true)}
+            className="w-full text-center py-3 mt-4 bg-pastel-blue/40 text-blue-900 rounded-xl font-bold shadow-sm hover:scale-105 transition-transform text-sm flex justify-center items-center gap-2 border border-blue-200/50"
+          >
+            📲 安裝 iPhone 離線 App 版
+          </button>
+        )}
       </div>
+
+      {/* iPhone 安裝教學 Modal */}
+      {showInstallGuide && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-techo-ink/40 backdrop-blur-sm" onClick={() => setShowInstallGuide(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl relative border-2 border-dashed border-pastel-blue" onClick={e => e.stopPropagation()}>
+            <button className="absolute top-2 right-4 text-xl text-techo-ink/50" onClick={() => setShowInstallGuide(false)}>×</button>
+            <h3 className="text-lg font-bold text-techo-ink mb-4 text-center">📱 iPhone 安裝教學</h3>
+            
+            <div className="space-y-4 text-sm text-techo-ink/80 font-sans tracking-wide">
+              <div className="flex items-start gap-3">
+                <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">1</span>
+                <span>點擊 Safari 瀏覽器底部的 <b>「分享」</b> 圖示<br/><span className="text-blue-500 inline-block border border-blue-200 bg-blue-50 px-1 rounded text-xs mt-1">(像一個有朝上箭頭的方塊)</span></span>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">2</span>
+                <span>將選單往上滑拉，找到 <b>「加入主畫面 ＋」</b></span>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-white font-bold bg-blue-400 rounded-full w-6 h-6 flex items-center justify-center shrink-0">3</span>
+                <span>點擊右上角的 <b>「新增」</b>，以後就可以在桌面直接秒開，而且完全支援離線使用喔！</span>
+              </div>
+            </div>
+
+            <button onClick={() => setShowInstallGuide(false)} className="w-full mt-6 py-2 bg-pastel-blue text-techo-ink rounded-lg font-bold">
+              我知道了！
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* FAQ 區塊 (SEO Semantic Markup) */}
       <section className="w-full mt-10 p-4 bg-white/60 border border-techo-ink/10 rounded-xl space-y-4">
