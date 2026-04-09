@@ -8,6 +8,8 @@ export interface ScoreRecord {
   score: number;
   date: string;
   accuracy: number;
+  timeSpent?: number;
+  testType?: string;
 }
 
 const NAME_KEY = "jp50_kawaii_username";
@@ -45,7 +47,7 @@ export function useLeaderboard() {
     if (typeof window !== "undefined") localStorage.setItem(NAME_KEY, name);
   };
 
-  const addScore = async (name: string, score: number, accuracy: number) => {
+  const addScore = async (name: string, score: number, accuracy: number, timeSpent?: number, testType?: string) => {
     const finalName = name.trim() || "神秘忍者";
     
     const newRecord: ScoreRecord = {
@@ -53,6 +55,8 @@ export function useLeaderboard() {
       name: finalName,
       score,
       accuracy,
+      timeSpent,
+      testType,
       date: new Date().toLocaleDateString("zh-TW", { month: 'short', day: 'numeric' }),
     };
 

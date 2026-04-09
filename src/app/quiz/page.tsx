@@ -19,19 +19,33 @@ function QuizContent() {
   
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
 
-  // 計分相關狀態
+  // 計分與時間追蹤狀態
   const [score, setScore] = useState(0);
   const [currentAttempts, setCurrentAttempts] = useState(0); 
   const [firstTryCorrects, setFirstTryCorrects] = useState(0);
+  const [startTime, setStartTime] = useState<number>(0);
+  const [timeSpent, setTimeSpent] = useState<number>(0);
+  const [testType, setTestType] = useState<string>("綜合");
 
   const { updateProgress } = useProgressData();
   const { speak } = useAudioEngine();
   const { addScore, userName } = useLeaderboard();
 
-  // 初始化題庫
+  // 初始化題庫與開始時間
   useEffect(() => {
     const typesParam = searchParams.get("types");
     const typesArray = typesParam ? (typesParam.split(",") as KanaType[]) : ["hiragana" as KanaType];
+    
+    // 將英文代碼轉換為中文名稱
+    const typeMapping: Record<string, string> = {
+      hiragana: "平假名",
+      katakana: "片假名",
+      dakuten: "濁音/半濁音",
+      yoon: "拗音"
+    };
+    const mappedTypes = typesArray.map(t => typeMapping[t] || t).join(" + ");
+    setTestType(mappedTypes);
+    
     const session = generateQuizSession(typesArray, 50);
     
     if (session.length === 0) {
@@ -39,6 +53,8 @@ function QuizContent() {
     } else {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setQuestions(session);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStartTime(Date.now());
     }
   }, [searchParams, router]);
 
@@ -80,7 +96,9 @@ function QuizContent() {
       // 判斷是否為最後一題，若是則直接結算
       if (currentIndex + 1 >= questions.length) {
         const accuracy = Math.round((newFirstTryCorrects / questions.length) * 100);
-        addScore(userName, newScore, accuracy);
+        const totalSeconds = Math.floor((Date.now() - startTime) / 1000);
+        setTimeSpent(totalSeconds);
+        addScore(userName, newScore, accuracy, totalSeconds, testType);
       }
 
       setTimeout(() => {
@@ -119,17 +137,29 @@ function QuizContent() {
         </h2>
         
         {/* 分數結算板 */}
-        <div className="w-full max-w-sm bg-white rounded-2xl shadow-md border-2 border-pastel-yellow p-6 relative overflow-hidden">
+        <div className="w-full max-w-sm bg-white rounded-2xl shadow-md border-2 border-pastel-yellow p-6 relative overflow-hidden space-y-3">
           <div className="absolute top-0 right-0 w-16 h-16 bg-pastel-yellow/30 rounded-bl-full"></div>
           
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center bg-gray-50/50 p-2 rounded-lg">
             <span className="text-techo-ink/70">總得分</span>
             <span className="text-4xl font-extrabold text-orange-500 font-sans">{score}</span>
           </div>
           
-          <div className="flex justify-between items-center border-t border-dashed border-techo-ink/10 pt-4">
-            <span className="text-techo-ink/70">一發命中率</span>
-            <span className="text-2xl font-bold text-pastel-green font-sans">{accuracy}%</span>
+          <div className="flex justify-between items-center px-2">
+            <span className="text-techo-ink/70 text-sm">一發命中率</span>
+            <span className="text-xl font-bold text-pastel-green font-sans">{accuracy}%</span>
+          </div>
+          
+          <div className="flex justify-between items-center px-2">
+            <span className="text-techo-ink/70 text-sm">測驗範圍</span>
+            <span className="text-sm font-bold text-techo-ink/80 text-right">{testType}</span>
+          </div>
+          
+          <div className="flex justify-between items-center px-2">
+            <span className="text-techo-ink/70 text-sm">花費時間</span>
+            <span className="text-sm font-bold text-techo-ink/80 font-sans">
+              {Math.floor(timeSpent / 60)}分 {timeSpent % 60}秒
+            </span>
           </div>
         </div>
 

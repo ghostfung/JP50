@@ -60,24 +60,42 @@ export default function LeaderboardPage() {
               return (
                 <div 
                   key={record.id}
-                  className={`flex items-center justify-between p-3 rounded-xl border-2 ${rankStyle} transition-all`}
+                  className={`flex flex-col p-3 rounded-xl border-2 ${rankStyle} transition-all`}
                 >
-                  <div className="flex items-center gap-3">
-                    {medal}
-                    <div className="flex flex-col">
-                      <span className="font-bold text-lg text-techo-ink">{record.name}</span>
-                      <span className="text-[10px] text-techo-ink/50 font-sans tracking-wide">{record.date}</span>
+                  <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-3">
+                      {medal}
+                      <div className="flex flex-col">
+                        <span className="font-bold text-lg text-techo-ink">{record.name}</span>
+                        <div className="flex flex-wrap gap-1 items-center max-w-[120px]">
+                          <span className="text-[10px] text-techo-ink/50 font-sans tracking-wide">{record.date}</span>
+                          {record.testType && (
+                            <span className="text-[9px] bg-techo-ink/5 text-techo-ink/60 px-1 rounded font-sans tracking-tight truncate w-full">
+                              {record.testType}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-col items-end min-w-[70px]">
+                      <span className="font-extrabold text-orange-500 font-sans text-xl tracking-tight">
+                        {record.score}
+                      </span>
+                      <span className="text-[11px] text-pastel-green font-bold font-sans">
+                        準確率 {record.accuracy}%
+                      </span>
                     </div>
                   </div>
-                  
-                  <div className="flex flex-col items-end">
-                    <span className="font-extrabold text-orange-500 font-sans text-xl tracking-tight">
-                      {record.score}
-                    </span>
-                    <span className="text-xs text-pastel-green font-bold font-sans">
-                      準確率 {record.accuracy}%
-                    </span>
-                  </div>
+
+                  {/* 顯示時間 (如果有紀錄的話) */}
+                  {record.timeSpent !== undefined && (
+                    <div className="w-full border-t border-dashed border-techo-ink/10 mt-2 pt-1 flex justify-end">
+                      <span className="text-[10px] text-techo-ink/50 font-sans flex items-center gap-1">
+                        ⏱️ {Math.floor(record.timeSpent / 60)}分 {record.timeSpent % 60}秒
+                      </span>
+                    </div>
+                  )}
                 </div>
               );
             })}
