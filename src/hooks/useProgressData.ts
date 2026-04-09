@@ -21,6 +21,7 @@ export function useProgressData() {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         try {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setProgress(JSON.parse(stored));
         } catch (e) {
           console.error("無法讀取進度檔案", e);

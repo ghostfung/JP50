@@ -2,11 +2,13 @@
 
 import { useProgressData } from "@/hooks/useProgressData";
 import { KanaType, kanaData, CharacterData } from "@/core/data";
+import { useAudioEngine } from "@/hooks/useAudioEngine";
 import Link from "next/link";
 import { useState } from "react";
 
 export default function DashboardPage() {
   const { progress, isLoaded } = useProgressData();
+  const { speak } = useAudioEngine();
   const [activeTab, setActiveTab] = useState<KanaType>("hiragana");
 
   if (!isLoaded) return <div className="text-center pt-20">翻動貼紙簿中... 📓</div>;
@@ -103,9 +105,10 @@ export default function DashboardPage() {
             const decor = getStatusDecor(status);
             
             return (
-              <div 
+              <button 
                 key={char.id} 
-                className={`relative flex flex-col items-center justify-center aspect-square rounded border transition-all ${decor.style}`}
+                onClick={() => speak(char.char, 1)}
+                className={`relative flex flex-col items-center justify-center aspect-square rounded border transition-all active:scale-90 hover:scale-105 hover:shadow-md z-10 hover:z-20 ${decor.style}`}
               >
                 <span className="text-2xl font-bold text-techo-ink">{char.char}</span>
                 <span className="text-[10px] text-techo-ink/60 font-sans uppercase">{char.romaji}</span>
@@ -115,7 +118,7 @@ export default function DashboardPage() {
                     {decor.emoji}
                   </div>
                 )}
-              </div>
+              </button>
             );
           })}
         </div>

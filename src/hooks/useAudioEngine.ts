@@ -1,20 +1,32 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 export function useAudioEngine() {
-  const speak = useCallback((text: string) => {
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const speak = useCallback((text: string, count = 1) => {
     if (typeof window !== "undefined" && "speechSynthesis" in window) {
-      // 在播放前，取消前面可能還在唸的聲音，避免卡頓重疊
+      // 中止目前瀏覽器正在唸的聲音
       window.speechSynthesis.cancel();
       
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "ja-JP";
-      // 您可以稍微調整 rate 讓聲音聽起來比較可愛慢條斯理
-      utterance.rate = 0.9;
-      utterance.pitch = 1.1; 
+      // 清除所有預定中還沒唸的定時器（避免按下一題結果上一題還在唸）
+      timeoutsRef.current.forEach(clearTimeout);
+      timeoutsRef.current = [];
       
-      window.speechSynthesis.speak(utterance);
+      for (let i = 0; i < count; i++) {
+        // 第一次立馬唸 (i=0 時間為 0)，第二次相隔 2 秒 (i=1 時間為 2000)
+        const tId = setTimeout(() => {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = "ja-JP";
+          utterance.rate = 0.9;
+          utterance.pitch = 1.1; 
+          
+          window.speechSynthesis.speak(utterance);
+        }, i * 2000);
+        
+        timeoutsRef.current.push(tId);
+      }
     }
   }, []);
 
