@@ -15,8 +15,21 @@ const mPlusRounded = M_PLUS_Rounded_1c({
 });
 
 export const metadata: Metadata = {
-  title: "JP50 - 可愛五十音手帳",
-  description: "日系風格的五十音學習手帳",
+  title: "JP50 五十音練習 | 日文初學者工具",
+  description: "免費平假名片假名測驗工具，為日文初學者打造的可愛手帳風格 Japanese Hiragana Quiz！",
+  keywords: ["50音練習", "日文初學者工具", "免費平假名片假名測驗", "Japanese Hiragana Quiz", "五十音", "日語學習"],
+  openGraph: {
+    title: "JP50 五十音練習 | 日文初學者工具",
+    description: "免費平假名片假名測驗工具，為日文初學者打造的可愛手帳風格 Japanese Hiragana Quiz！",
+    type: "website",
+    locale: "zh_TW",
+    siteName: "JP50 五十音手帳",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "JP50 五十音練習",
+    description: "免費平假名片假名測驗工具。",
+  }
 };
 
 export default function RootLayout({

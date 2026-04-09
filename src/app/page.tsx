@@ -27,8 +27,53 @@ export default function Home() {
     });
   };
 
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": ["SoftwareApplication", "EducationApplication"],
+        "name": "JP50 五十音練習",
+        "operatingSystem": "Any",
+        "applicationCategory": "EducationalApplication",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "HKD"
+        },
+        "description": "免費平假名片假名測驗工具，為日文初學者打造的線上學習平台。"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "點樣用呢個工具記熟 50 音？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "本工具提供聽力盲測模式，進入題目會自動發音兩次，您可以透過聆聽與選擇正確的平假名或片假名，快速加深大腦記憶。"
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "呢個程式係咪免費？",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "係！呢個 50音練習工具係完全免費嘅，無需下載亦無需註冊，打開網頁就可以即刻開始練習。"
+            }
+          }
+        ]
+      }
+    ]
+  };
+
   return (
-    <div className="flex flex-col items-center py-6 space-y-8 animate-in fade-in duration-700 font-handwriting">
+    <article className="flex flex-col items-center py-6 space-y-8 animate-in fade-in duration-700 font-handwriting">
+      
+      {/* 注入 Structured Data (JSON-LD) 給搜尋引擎與 AI */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+      />
 
       {/* 標題與紙膠帶裝飾 */}
       <div className="relative text-center w-full max-w-xs pt-4">
@@ -132,6 +177,23 @@ export default function Home() {
         </Link>
       </div>
 
-    </div>
+      {/* FAQ 區塊 (SEO Semantic Markup) */}
+      <section className="w-full mt-10 p-4 bg-white/60 border border-techo-ink/10 rounded-xl space-y-4">
+        <h2 className="text-xl font-bold text-techo-ink mb-2">🎈 常見問題 FAQ</h2>
+        <article>
+          <h3 className="font-bold text-techo-accent text-sm">Q: 點樣用呢個工具記熟 50 音？</h3>
+          <p className="text-sm text-techo-ink/80 mt-1 leading-relaxed">
+            本工具提供聽力盲測模式，進入題目會自動發音兩次，您可以透過聆聽與選擇正確的平假名或片假名，快速加深大腦記憶。
+          </p>
+        </article>
+        <article className="border-t border-dashed border-techo-ink/10 pt-4">
+          <h3 className="font-bold text-techo-accent text-sm">Q: 呢個程式係咪免費？</h3>
+          <p className="text-sm text-techo-ink/80 mt-1 leading-relaxed">
+            係！呢個 50音練習工具係完全免費嘅，無需下載亦無需註冊，打開網頁就可以即刻開始練習。
+          </p>
+        </article>
+      </section>
+
+    </article>
   );
 }
