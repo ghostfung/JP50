@@ -35,6 +35,13 @@ export default function RootLayout({
            <div className="absolute top-2 right-6 w-16 h-6 bg-yellow-300/60 rotate-6 rounded-sm mix-blend-multiply opacity-80" />
            
           {children}
+
+          {/* 頁尾版權宣告 */}
+          <footer className="absolute bottom-4 left-0 w-full text-center">
+            <p className="text-xs text-techo-ink/40 font-sans tracking-widest font-bold">
+              © {new Date().getFullYear()} Gray. All Rights Reserved.
+            </p>
+          </footer>
         </main>
       </body>
     </html>
