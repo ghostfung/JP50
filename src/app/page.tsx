@@ -19,6 +19,7 @@ export default function Home() {
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [sysStats, setSysStats] = useState({ onlineUsers: 1, totalTests: 0 });
 
   const toggleCategory = (id: KanaType) => {
     setSelected((prev) => {
@@ -81,7 +82,34 @@ export default function Home() {
 
     checkDevice();
 
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    // 啟動在線人數與測試次數的心跳偵測
+    let uid = localStorage.getItem("jp50_uid");
+    if (!uid) {
+      uid = Math.random().toString(36).substring(2, 15);
+      localStorage.setItem("jp50_uid", uid);
+    }
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/stats", {
+          method: "POST",
+          body: JSON.stringify({ uuid: uid })
+        });
+        const data = await res.json();
+        if (data && !data.error) {
+          setSysStats({ onlineUsers: data.onlineUsers || 1, totalTests: data.totalTests || 0 });
+        }
+      } catch (e) {
+        // 忽略錯誤
+      }
+    };
+
+    fetchStats();
+    const statInterval = setInterval(fetchStats, 10000); // 10秒送一次心跳包
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      clearInterval(statInterval);
+    };
   }, []);
 
   // 處理安裝按鈕點擊
@@ -159,6 +187,21 @@ export default function Home() {
         <p className="text-sm text-techo-ink/70 mt-2 font-sans tracking-widest">
           ~ JP 50 KANA ~
         </p>
+      </div>
+
+      {/* 數據看版 (在線與總挑戰) */}
+      <div className="flex justify-center items-center gap-4 text-xs font-sans text-techo-ink/60 bg-white/50 px-4 py-2 rounded-full border border-techo-accent/20 shadow-sm animate-in fade-in zoom-in duration-700 delay-300">
+        <span className="flex items-center gap-1">
+          <span className="relative flex h-2 w-2 mr-1">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          </span>
+          在線: <b className="text-techo-ink">{sysStats.onlineUsers}</b> 人
+        </span>
+        <span className="w-px h-3 bg-techo-ink/20"></span>
+        <span className="flex items-center gap-1">
+          📝 累計練習: <b className="text-techo-ink">{sysStats.totalTests}</b> 次
+        </span>
       </div>
 
       {/* 輸入暱稱 */}

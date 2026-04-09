@@ -30,6 +30,9 @@ export async function POST(request: Request) {
     // 存回雲端
     await kv.set(LEADERBOARD_KEY, newBoard);
     
+    // 全球累計測試次數 +1
+    await kv.incr("global_jp50_total_tests");
+    
     return NextResponse.json({ success: true, board: newBoard });
   } catch (error) {
     return NextResponse.json({ error: "分數據交失敗" }, { status: 500 });
